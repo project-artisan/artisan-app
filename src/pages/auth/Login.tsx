@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator"
 
 export default function LoginPage() {
   const handleGithubLogin = () => {
-    const githubClientId = import.meta.env.;
+    const githubClientId = import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
     const redirectUri = import.meta.env.VITE_APP_GITHUB_REDIRECT_URL;
     
     const githubAuthUrl = `${import.meta.env.VITE_APP_GITHUB_AUTH_URL}?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=user:email`;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { axiosInstance } from '@/lib/axios';
 
 interface InterviewResult {
   interviewId: number;
@@ -39,7 +40,7 @@ export function useInterviewResults(initialPage = 0, pageSize = 10): UseIntervie
   const fetchPage = async (pageNumber: number) => {
     setIsLoading(true);
     try {
-      const response = await axios.get<InterviewResultsResponse>('/api/interviews/me', {
+      const response = await axiosInstance.get<InterviewResultsResponse>('/api/interviews/me', {
         params: {
           page: pageNumber,
           size: pageSize,

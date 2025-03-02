@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { cn } from '@/lib/utils'
 import { Button } from "./ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
 import { ScrollArea } from "./ui/scroll-area"
@@ -19,9 +18,9 @@ import {
   LogIn,
   PlayCircle,
   MessageSquare,
-  LogOut
+  LogOut,
+  Space
 } from "lucide-react"
-import ThemeToggle from "./ui/theme-toggle"
 import { interviewCategories } from "@/types/interview"
 import { useAuth } from '@/contexts/auth';
 
@@ -30,21 +29,22 @@ interface MenuItem {
   path?: string;
   icon?: React.ReactNode;
   submenu?: MenuItem[];
+  requireAuth?: boolean;
 }
 
 const menuItems: MenuItem[] = [
-  { 
-    title: '대시보드', 
-    path: '/', 
-    icon: <LayoutDashboard className="h-5 w-5" /> 
-  },
   {
     title: '외부 기술블로그',
     icon: <FileText className="h-5 w-5" />,
     submenu: [
       { title: '기술 블로그', path: '/blogs/tech', icon: <Folder className="h-4 w-4" /> },
       { title: '기술 블로그 회사 목록', path: '/blogs/companies', icon: <Folder className="h-4 w-4" /> },
-      { title: '북마크', path: '/blogs/bookmarks', icon: <BookOpen className="h-4 w-4" /> }
+      // { 
+      //   title: '북마크', 
+      //   path: '/blogs/bookmarks', 
+      //   icon: <BookOpen className="h-4 w-4" />,
+      //   requireAuth: true
+      // }
     ]
   },
   {
@@ -52,14 +52,20 @@ const menuItems: MenuItem[] = [
     icon: <MessageSquare className="h-5 w-5" />,
     submenu: [
       { title: '전체 보기', path: '/interview', icon: <BookOpen className="h-4 w-4" /> },
-      ...interviewCategories.map(category => ({
-        title: category.title,
-        path: `/interview/${category.id}`
-      })),
-      { title: '면접 결과', path: '/interview/results', icon: <ChevronDown className="h-4 w-4" /> }
+      { 
+        title: '면접 결과', 
+        path: '/interview/results', 
+        icon: <Folder className="h-4 w-4" />,
+        requireAuth: true
+      }
     ]
   },
-  { title: '설정', path: '/settings', icon: <Settings className="h-5 w-5" /> }
+  { 
+    title: '설정', 
+    path: '/settings', 
+    icon: <Settings className="h-5 w-5" />,
+    requireAuth: true
+  }
 ]
 
 export const Sidebar = () => {
@@ -79,14 +85,10 @@ export const Sidebar = () => {
   const authenticatedMenuItems = [
     ...menuItems,
     {
-      title: '인터뷰',
-      path: '/interview',
-      icon: <MessageSquare className="h-5 w-5" />
-    },
-    {
       title: '프로필',
       path: '/profile',
-      icon: <User className="h-5 w-5" />
+      icon: <User className="h-5 w-5" />,
+      requireAuth: true
     }
   ];
 
@@ -123,7 +125,7 @@ export const Sidebar = () => {
           </button>
           {isExpanded && showText && (
             <div className="ml-4 mt-1 space-y-1">
-              {item.submenu.map((subItem: MenuItem) => (
+              {item.submenu?.map((subItem: MenuItem) => (
                 <Link
                   key={subItem.path}
                   to={subItem.path}
@@ -153,7 +155,7 @@ export const Sidebar = () => {
   }
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col" ref={panelRef}>
+    <div className="flex h-[calc(100vh-100px)] flex-col" ref={panelRef}>
       <div className="flex items-center justify-between px-4 py-2">
         {showText && <h2 className="text-lg font-semibold">메뉴</h2>}
       </div>
@@ -163,7 +165,6 @@ export const Sidebar = () => {
           <MenuItem key={item.path || item.title} item={item} />
         ))}
       </nav>
-
       {/* 로그인 메뉴 - 하단 고정 */}
       <div className="border-t p-2">
         {isAuthenticated ? (
@@ -201,13 +202,6 @@ export const Sidebar = () => {
       </div>
     </div>
   )
-
-  const onResize = () => {
-    if (panelRef.current) {
-      const width = panelRef.current.getBoundingClientRect().width
-      setShowText(width > 150) // 150px 이하일 때 텍스트 숨김
-    }
-  }
 
   return (
     <>

@@ -6,7 +6,6 @@ import AuthLayout from '@/layouts/AuthLayout';
 import DefaultLayout from '@/layouts/DefaultLayout';
 import InterviewLayout from '@/layouts/InterviewLayout';
 import NotFoundPage from '@/pages/error/NotFound';
-import OngoingInterviews from '@/pages/interview/OngoingInterviews';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/auth';
 
@@ -55,7 +54,6 @@ const router = createBrowserRouter([
             children: [
               { index: true, element: <AllQuestionSets /> },
               { path: ':categoryId', element: <InterviewCategory /> },
-              { path: 'ongoing', element: <OngoingInterviews/> },
               { path: 'results', element: <InterviewResults /> },
               { path: ':interviewId/detail', element: <InterviewDetail/> }
             ]

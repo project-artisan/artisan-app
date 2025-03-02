@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -8,121 +8,97 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useTechBlogList } from '@/hooks/useTechBlogList';
 
 export type SortOption = 'latest' | 'oldest' | 'popular';
-
-export type TechBlogOption = 'NAVER' | 'KAKAO' | 'LINE' | 'COUPANG' | 'WOOWAHAN' | 'TOSS';
-
-const SORT_OPTIONS = [
-  { value: 'latest', label: '최신 순' },
-  { value: 'oldest', label: '과거 순' },
-  { value: 'popular', label: '인기 순' },
-] as const;
-
-const TECH_BLOG_OPTIONS = [
-  { value: 'NAVER', label: '네이버' },
-  { value: 'KAKAO', label: '카카오' },
-  { value: 'LINE', label: '라인' },
-  { value: 'COUPANG', label: '쿠팡' },
-  { value: 'WOOWAHAN', label: '우아한형제들' },
-  { value: 'TOSS', label: '토스' },
-] as const;
+export type TechBlogOption = string;
 
 interface BlogSearchProps {
   onSearch: (value: string) => void;
   onSortChange: (value: SortOption) => void;
-  onTechBlogChange: (value: TechBlogOption[]) => void;
+  onTechBlogChange: (blogs: TechBlogOption[]) => void;
   sortOption: SortOption;
   selectedTechBlogs: TechBlogOption[];
 }
 
-export default function BlogSearch({ 
-  onSearch, 
-  onSortChange, 
+export default function BlogSearch({
+  onSearch,
+  onSortChange,
   onTechBlogChange,
   sortOption,
-  selectedTechBlogs 
+  selectedTechBlogs,
 }: BlogSearchProps) {
-  const handleTechBlogSelect = (value: string) => {
-    const techBlogValue = value as TechBlogOption;
-    if (selectedTechBlogs.includes(techBlogValue)) {
-      onTechBlogChange(selectedTechBlogs.filter(blog => blog !== techBlogValue));
+  const { techBlogs, loading } = useTechBlogList();
+  const [open, setOpen] = useState(false);
+
+  const handleTechBlogToggle = (blogName: string) => {
+    if (selectedTechBlogs.includes(blogName)) {
+      onTechBlogChange(selectedTechBlogs.filter(name => name !== blogName));
     } else {
-      onTechBlogChange([...selectedTechBlogs, techBlogValue]);
+      onTechBlogChange([...selectedTechBlogs, blogName]);
     }
   };
 
-  const handleRemoveTechBlog = (blogToRemove: TechBlogOption) => {
-    onTechBlogChange(selectedTechBlogs.filter(blog => blog !== blogToRemove));
-  };
-
   return (
-    <div className="flex flex-col w-full space-y-2">
-      <div className="flex flex-col md:flex-row items-center gap-2 w-full">
-        <div className="relative flex-1 w-full md:w-auto">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search posts..."
-            className="pl-8"
-            onChange={(e) => onSearch(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Select
-            value={selectedTechBlogs.length === 1 ? selectedTechBlogs[0] : undefined}
-            onValueChange={handleTechBlogSelect}
+    <div className="flex flex-1 items-center gap-4">
+      <Input
+        placeholder="검색어를 입력하세요"
+        onChange={(e) => onSearch(e.target.value)}
+        className="max-w-sm"
+      />
+      
+      <Select value={sortOption} onValueChange={onSortChange}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="정렬 기준" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="latest">최신순</SelectItem>
+          <SelectItem value="oldest">오래된순</SelectItem>
+          <SelectItem value="popular">인기순</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button 
+            variant="outline" 
+            className="w-[200px] justify-between"
+            disabled={loading}
           >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Select blog" />
-            </SelectTrigger>
-            <SelectContent>
-              {TECH_BLOG_OPTIONS.map((option) => (
-                <SelectItem 
-                  key={option.value} 
-                  value={option.value}
-                  className={selectedTechBlogs.includes(option.value as TechBlogOption) ? 'bg-secondary' : ''}
+            {selectedTechBlogs.length > 0 
+              ? `${selectedTechBlogs.length}개 선택됨`
+              : "기술 블로그 선택"}
+            <Check className={`ml-2 h-4 w-4 ${selectedTechBlogs.length > 0 ? 'opacity-100' : 'opacity-0'}`} />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0" align="start">
+          <div className="max-h-[300px] overflow-y-auto">
+            <div className="grid gap-1 p-2">
+              {techBlogs.map((blog) => (
+                <div
+                  key={blog.id}
+                  className="flex items-center space-x-2 rounded-sm px-2 py-1.5 hover:bg-accent"
                 >
-                  {option.label}
-                </SelectItem>
+                  <Checkbox
+                    checked={selectedTechBlogs.includes(blog.name)}
+                    onCheckedChange={() => handleTechBlogToggle(blog.name)}
+                  />
+                  <label className="flex-grow cursor-pointer text-sm">
+                    {blog.title}
+                  </label>
+                </div>
               ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={sortOption}
-            onValueChange={(value) => onSortChange(value as SortOption)}
-          >
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              {SORT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      {selectedTechBlogs.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedTechBlogs.map(blogValue => {
-            const blog = TECH_BLOG_OPTIONS.find(option => option.value === blogValue);
-            return blog && (
-              <Badge 
-                key={blog.value}
-                variant="secondary" 
-                className="flex items-center gap-1 cursor-pointer hover:bg-secondary/80"
-                onClick={() => handleRemoveTechBlog(blogValue)}
-              >
-                {blog.label}
-                <X className="h-3 w-3" />
-              </Badge>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

@@ -1,17 +1,14 @@
-import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Github } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
+import {Github} from "lucide-react"
+import {Separator} from "@/components/ui/separator"
 
 export default function LoginPage() {
   const handleGithubLogin = () => {
     const githubClientId = import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
     const redirectUri = import.meta.env.VITE_APP_GITHUB_REDIRECT_URL;
-    
-    const githubAuthUrl = `${import.meta.env.VITE_APP_GITHUB_AUTH_URL}?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=user:email`;
-    
-    window.location.href = githubAuthUrl;
+
+    window.location.href = `${import.meta.env.VITE_APP_GITHUB_AUTH_URL}?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=user:email`;
   }
 
   return (

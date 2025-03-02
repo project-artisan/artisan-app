@@ -67,7 +67,7 @@ export default function InterviewSession() {
       console.log(currentQuestion)
       if (currentTailQuestionId) {
         // 꼬리 질문 답변 제출
-        const { data } = await axios.post(`/api/tail-questions/${currentTailQuestionId}/submit`, {
+        const { data } = await axiosInstance.post(`/api/tail-questions/${currentTailQuestionId}/submit`, {
           interviewQuestionId: currentQuestion.interviewQuestionId,
           tailQuestionId: currentTailQuestionId,
           answerState: 'COMPLETE',
@@ -81,7 +81,7 @@ export default function InterviewSession() {
         response = data;
       } else {
         // 일반 질문 답변 제출
-        const { data } = await axios.post(`/api/interviews/${interviewId}/submit`, {
+        const { data } = await axiosInstance.post(`/api/interviews/${interviewId}/submit`, {
           interviewQuestionId: currentQuestion.interviewQuestionId,
           answerState: 'COMPLETE',
           timeToAnswer: 0, // TODO: 시간 측정 추가

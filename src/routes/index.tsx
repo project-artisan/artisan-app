@@ -13,7 +13,6 @@ import { AuthProvider } from '@/contexts/auth';
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
 const TechBlog = React.lazy(() => import('@/pages/blogs/TechBlog'));
 const Companies = React.lazy(() => import('@/pages/blogs/Companies'));
-const InterviewCategory = React.lazy(() => import('@/pages/interview/InterviewCategory'));
 const AllQuestionSets = React.lazy(() => import('@/pages/interview/AllQuestionSets'));
 const InterviewResults = React.lazy(() => import('@/pages/interview/Results'));
 const ResultDetail = React.lazy(() => import('@/pages/interview/ResultDetail'));
@@ -53,7 +52,6 @@ const router = createBrowserRouter([
             path: 'interview',
             children: [
               { index: true, element: <AllQuestionSets /> },
-              { path: ':categoryId', element: <InterviewCategory /> },
               { path: 'results', element: <InterviewResults /> },
               { path: ':interviewId/detail', element: <InterviewDetail/> }
             ]

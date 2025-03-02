@@ -7,7 +7,7 @@ import { ChatMessage } from '@/components/interview/ChatMessage';
 import { ChatInput } from '@/components/interview/ChatInput';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import axios from 'axios';
+import { axiosInstance } from '@/lib/axios';
 
 interface SubmitResponse {
   data: {

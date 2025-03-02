@@ -1,5 +1,5 @@
+import { axiosInstance } from '@/lib/axios';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
 export type AnswerState = 'INIT' | 'PASS' | 'FAIL' | 'SKIP';
 export type InterviewState = 'PROGRESS' | 'DONE';
@@ -23,7 +23,7 @@ export interface InterviewDetailResponse {
 
 const fetchInterviewDetail = async (interviewId: string): Promise<InterviewDetailResponse> => {
   const accessToken = localStorage.getItem('access_token');
-  const response = await axios.get(`/api/interviews/${interviewId}/result`, {
+  const response = await axiosInstance.get(`/api/interviews/${interviewId}/result`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

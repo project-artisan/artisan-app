@@ -1,5 +1,5 @@
+import { axiosInstance } from '@/lib/axios';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 interface InterviewQuestion {
   interviewQuestionId: number;
@@ -34,7 +34,7 @@ export function useInterview(interviewId: string | undefined): UseInterviewRetur
       }
 
       try {
-        const response = await axios.get(`/api/interviews/${interviewId}`, {
+        const response = await axiosInstance.get(`/api/interviews/${interviewId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
           }

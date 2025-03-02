@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { axiosInstance } from '@/lib/axios';
 
 interface CurrentQuestion {
   interviewId: number;
@@ -34,7 +34,7 @@ export function useCurrentQuestion(interviewId: string | undefined): UseCurrentQ
     }
 
     try {
-      const response = await axios.get(`/api/interviews/${interviewId}/current/problem`, {
+      const response = await axiosInstance.get(`/api/interviews/${interviewId}/current/problem`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }

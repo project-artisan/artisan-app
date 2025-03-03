@@ -15,7 +15,6 @@ const TechBlog = React.lazy(() => import('@/pages/blogs/TechBlog'));
 const Companies = React.lazy(() => import('@/pages/blogs/Companies'));
 const AllQuestionSets = React.lazy(() => import('@/pages/interview/AllQuestionSets'));
 const InterviewResults = React.lazy(() => import('@/pages/interview/Results'));
-const ResultDetail = React.lazy(() => import('@/pages/interview/ResultDetail'));
 const InterviewSession = React.lazy(() => import('@/pages/interview/InterviewSession'));
 const Settings = React.lazy(() => import('@/pages/Settings'));
 const LoginPage = React.lazy(() => import('@/pages/auth/Login'));
@@ -35,6 +34,7 @@ const Root = () => {
 const router = createBrowserRouter([
   {
     element: <Root />,
+    errorElement: <NotFoundPage />,
     children: [
       {
         path: '/',
@@ -43,7 +43,6 @@ const router = createBrowserRouter([
             <DefaultLayout />
           </Suspense>
         ),
-        errorElement: <NotFoundPage />,
         children: [
           { index: true, element: <Dashboard /> },
           { path: 'blogs/tech', element: <TechBlog /> },

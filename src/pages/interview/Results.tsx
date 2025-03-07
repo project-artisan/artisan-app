@@ -130,7 +130,7 @@ export default function InterviewResults() {
                     onClick={() => navigate(
                       result.interviewStatus === 'DONE' 
                         ? `/interview/${result.interviewId}/detail`
-                        : `/interview/${result.interviewId}`
+                        : `/interviews/${result.interviewId}`
                     )}
                   >
                     {result.interviewStatus === 'DONE' ? (

@@ -44,7 +44,8 @@ const router = createBrowserRouter([
           </Suspense>
         ),
         children: [
-          { index: true, element: <Dashboard /> },
+          // TODO 대시보드 만들기
+          { index: true, element: <TechBlog /> },
           { path: 'blogs/tech', element: <TechBlog /> },
           { path: 'blogs/companies', element: <Companies /> },
           {

@@ -1,77 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Image as ImageIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { axiosInstance } from '@/lib/axios';
 
-interface TechCompany {
+interface TechBlog {
   id: number;
   name: string;
-  nameEn: string;
-  description: string;
-  blogUrl: string;
-  logoUrl: string;
-  categories: string[];
+  title: string;
+  logo: string;
+  url: string;
 }
 
-const TECH_COMPANIES: TechCompany[] = [
-  {
-    id: 1,
-    name: '네이버',
-    nameEn: 'NAVER',
-    description: '네이버 개발자들의 다양한 기술 이야기와 개발 문화를 공유합니다.',
-    blogUrl: 'https://d2.naver.com',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Naver_Logotype.svg/2560px-Naver_Logotype.svg.png',
-    categories: ['웹', '모바일', 'AI', '클라우드', '보안']
-  },
-  {
-    id: 2,
-    name: '카카오',
-    nameEn: 'Kakao',
-    description: '카카오 서비스를 만드는 개발자들의 실제 개발 경험과 기술을 공유합니다.',
-    blogUrl: 'https://tech.kakao.com',
-    logoUrl: 'https://t1.kakaocdn.net/kakaocorp/corp_thumbnail/Kakao.png',
-    categories: ['모바일', '웹', '인프라', 'AI', '보안']
-  },
-  {
-    id: 3,
-    name: '우아한형제들',
-    nameEn: 'Woowa Bros',
-    description: '배달의민족을 만드는 우아한형제들의 개발 문화와 기술을 공유합니다.',
-    blogUrl: 'https://techblog.woowahan.com',
-    logoUrl: 'https://www.woowahan.com/img/pc/common-logo.png',
-    categories: ['웹', '모바일', 'MSA', '데이터']
-  },
-  {
-    id: 4,
-    name: '라인',
-    nameEn: 'LINE',
-    description: '라인의 엔지니어들이 개발하면서 경험한 기술적 시행착오와 해결 과정을 공유합니다.',
-    blogUrl: 'https://engineering.linecorp.com/ko/blog',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/LINE_logo.svg/2560px-LINE_logo.svg.png',
-    categories: ['모바일', '웹', '인프라', 'AI', '보안']
-  },
-  {
-    id: 5,
-    name: '당근마켓',
-    nameEn: 'Daangn',
-    description: '당근마켓 개발자들의 기술 스택과 개발 문화를 소개합니다.',
-    blogUrl: 'https://medium.com/daangn',
-    logoUrl: 'https://www.daangn.com/logo.png',
-    categories: ['웹', '모바일', '인프라', '데이터']
-  },
-  {
-    id: 6,
-    name: '토스',
-    nameEn: 'Toss',
-    description: '토스팀이 쌓은 기술과 경험, 그리고 문화를 공유합니다.',
-    blogUrl: 'https://toss.tech',
-    logoUrl: 'https://static.toss.im/assets/homepage/toss.png',
-    categories: ['핀테크', '웹', '모바일', '보안', '인프라']
-  }
-];
-
 export default function Companies() {
+  const [techBlogs, setTechBlogs] = useState<TechBlog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWltYWdlIj48cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHg9IjMiIHk9IjMiIHJ4PSIyIiByeT0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg==';
+    e.currentTarget.classList.add('p-8', 'opacity-30');
+  };
+
+  useEffect(() => {
+    const fetchTechBlogs = async () => {
+      try {
+        const response = await axiosInstance.get('/api/v1/blogs/tech');
+        setTechBlogs(response.data);
+      } catch (error) {
+        console.error('기술 블로그 목록을 불러오는데 실패했습니다:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTechBlogs();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[200px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="space-y-2">
@@ -82,37 +55,27 @@ export default function Companies() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {TECH_COMPANIES.map((company) => (
-          <Card key={company.id} className="flex flex-col">
-            <CardHeader className="space-y-4">
-              <div className="h-12 flex items-center">
+        {techBlogs.map((blog) => (
+          <Card key={blog.id} className="flex flex-col">
+            <CardHeader>
+              <div className="h-32 flex items-center justify-center bg-sky-50 dark:bg-sky-900/30 rounded-lg overflow-hidden">
                 <img
-                  src={company.logoUrl}
-                  alt={`${company.name} 로고`}
-                  className="max-h-full max-w-[200px] object-contain"
+                  src={blog.logo}
+                  alt={`${blog.title} 로고`}
+                  onError={handleImageError}
+                  className="max-h-full max-w-full object-contain p-4 transition-all"
                 />
               </div>
-              <div>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{company.name}</span>
-                  <span className="text-sm text-muted-foreground">{company.nameEn}</span>
+              <div className="mt-4">
+                <CardTitle className="text-center">
+                  {blog.title}
                 </CardTitle>
-                <CardDescription className="mt-2 line-clamp-2">
-                  {company.description}
-                </CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="flex-1 space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {company.categories.map((category) => (
-                  <Badge key={category} variant="secondary">
-                    {category}
-                  </Badge>
-                ))}
-              </div>
+            <CardContent className="flex-1">
               <Button
                 className="w-full"
-                onClick={() => window.open(company.blogUrl, '_blank')}
+                onClick={() => window.open(blog.url, '_blank')}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 블로그 방문하기

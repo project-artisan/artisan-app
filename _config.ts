@@ -1,10 +1,10 @@
 const config = {
   metadata: {
-    title: 'Vite React.js TypeScript & Shadcn/ui — Template',
+    title: '프로젝트 아티장',
     description:
-      'Boilerplate template designed to quickly bootstrap a React.js Web App, SPA, website or landing page with TypeScript, Shadcn/ui, TailwindCSS, Vite, SWC, ESLint, Husky and much more in just 30 seconds.',
+      '개인 프로젝트 모음',
     keywords:
-      'react.js, react.js-template, react.js-boilerplate, typescript, shadcn/ui, tailwindcss, vite, swc, eslint, prettier, husky, commitlint, lint-staged'
+      '아티장, 프로젝트 아티장'
   },
   server: {
     host: 'localhost',

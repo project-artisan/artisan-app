@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import BlogPostCard from '@/components/blogs/BlogPostCard';
 import BlogSearch, { SortOption, TechBlogOption } from '@/components/blogs/BlogSearch';
 import { useTechBlogPosts } from '@/hooks/useTechBlogPosts';
+import { useSearchParams } from 'react-router-dom';
 
 type ViewMode = 'grid' | 'list';
 
@@ -105,12 +106,18 @@ const BlogPostList: React.FC<BlogPostListProps> = ({
 );
 
 export default function TechBlog() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('latest');
-  const [selectedTechBlogs, setSelectedTechBlogs] = useState<TechBlogOption[]>([]);
+  const [selectedTechBlogs, setSelectedTechBlogs] = useState<TechBlogOption[]>(() => {
+    // URL에서 선택된 블로그들을 초기값으로 설정
+    const selectParam = searchParams.get('select');
+    return selectParam ? selectParam.split(',') as TechBlogOption[] : [];
+  });
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const observer = useRef<IntersectionObserver>();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     posts,
@@ -139,8 +146,33 @@ export default function TechBlog() {
 
   const handleTechBlogChange = (blogs: TechBlogOption[]) => {
     setSelectedTechBlogs(blogs);
+    
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (blogs.length > 0) {
+      newSearchParams.set('select', blogs.join(','));
+    } else {
+      newSearchParams.delete('select');
+    }
+    setSearchParams(newSearchParams);
+    
+    // ref를 통해 스크롤 컨테이너에 접근
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
     resetPosts();
   };
+
+  // URL 쿼리 파라미터가 변경될 때 상태 업데이트
+  useEffect(() => {
+    const selectParam = searchParams.get('select');
+    const blogsFromUrl = selectParam ? selectParam.split(',') as TechBlogOption[] : [];
+    
+    // URL의 블로그 선택이 현재 상태와 다른 경우에만 업데이트
+    if (JSON.stringify(blogsFromUrl) !== JSON.stringify(selectedTechBlogs)) {
+      setSelectedTechBlogs(blogsFromUrl);
+    }
+  }, [searchParams]);
 
   const lastPostElementRef = useCallback((node: HTMLElement | null) => {
     if (loading) return;
@@ -165,7 +197,7 @@ export default function TechBlog() {
   }, [fetchPosts, searchQuery, selectedTechBlogs]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" ref={scrollContainerRef}>
       <SearchControls
         onSearch={handleSearch}
         onSortChange={handleSortChange}

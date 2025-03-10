@@ -57,19 +57,19 @@ const StatusBadge = ({ status }: { status: AnswerState }) => {
       variant: "secondary",
       icon: Clock,
       text: "초기화",
-      className: ""
+      className: "text-xs lg:text-sm"
     },
     'COMPLETE': {
       variant: "default",
       icon: CheckCircle2,
       text: "통과",
-      className: "bg-green-500"
+      className: "bg-green-500 text-xs lg:text-sm"
     },
     'PASS': {
       variant: "destructive",
       icon: XCircle,
       text: "실패",
-      className: ""
+      className: "text-xs lg:text-sm"
     }
   };
 
@@ -77,13 +77,13 @@ const StatusBadge = ({ status }: { status: AnswerState }) => {
   const Icon = badge?.icon;
 
   return (
-    <div className={cn("inline-flex items-center rounded-md px-2 py-1 text-xs font-medium", {
+    <div className={cn("inline-flex items-center rounded-md px-1.5 py-0.5 lg:px-2 lg:py-1 font-medium", {
       "bg-green-500 text-white": badge.variant === "default",
       "bg-destructive text-destructive-foreground": badge.variant === "destructive",
       "bg-secondary text-secondary-foreground": badge.variant === "secondary",
       [badge.className || ""]: true
     })}>
-      <Icon className="w-3 h-3 mr-1" />
+      <Icon className="w-3 h-3 lg:w-4 lg:h-4 mr-1" />
       {badge.text}
     </div>
   );
@@ -115,15 +115,15 @@ const StatisticCard = ({ icon: Icon, title, count, total, color, bgColor }: {
 );
 
 const ReferenceLinks = ({ links }: { links: string[] }) => (
-  <div className="space-y-1">
+  <div className="space-y-2">
     {links.map((link, i) => (
       <div
         key={i}
-        className="flex items-center text-primary hover:underline cursor-pointer"
+        className="flex items-center text-primary hover:underline cursor-pointer text-xs lg:text-sm"
         onClick={() => window.open(link, '_blank')}
       >
-        <LinkIcon className="w-4 h-4 mr-2" />
-        <span className="text-sm">{link}</span>
+        <LinkIcon className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2 shrink-0" />
+        <span className="break-all">{link}</span>
       </div>
     ))}
   </div>
@@ -135,16 +135,46 @@ const CollapsibleText = ({ text, label }: { text: string; label: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldCollapse = text.length > MAX_PREVIEW_LENGTH;
 
-  const textContainerClasses = "rounded-md bg-muted p-3 text-sm overflow-x-hidden break-all whitespace-pre-wrap max-w-full";
-    return (
-      <div className="space-y-1.5">
-        <Label className="text-xs">{label}</Label>
-        <div className={textContainerClasses}>
-          {text}
+  const previewText = shouldCollapse && !isExpanded 
+    ? text.slice(0, MAX_PREVIEW_LENGTH) + '...' 
+    : text;
+
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs">{label}</Label>
+      <div className="rounded-md bg-muted p-3">
+        <div className="text-sm break-words whitespace-pre-wrap">
+          {previewText}
         </div>
+        {shouldCollapse && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-2 h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? '접기' : '더 보기'}
+          </Button>
+        )}
       </div>
-    );
+    </div>
+  );
 };
+
+const MobileStatisticCard = ({ icon: Icon, title, count, total, color }: { 
+  icon: any, title: string, count: number, total: number, color: string 
+}) => (
+  <div className="flex items-center justify-between p-3 border rounded-lg">
+    <div className="flex items-center gap-2">
+      <Icon className={`w-4 h-4 ${color}`} />
+      <span className="text-sm font-medium">{title}</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <span className={`font-bold ${color}`}>{count}</span>
+      <span className="text-sm text-muted-foreground">/ {total}</span>
+    </div>
+  </div>
+);
 
 const QuestionItem = ({ 
   question, 
@@ -159,13 +189,24 @@ const QuestionItem = ({
 }) => {
   return (
     <Card className="border-0 shadow-none">
-      <CardHeader className="px-0 pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Label className="text-xl text-muted-foreground">#{index + 1}</Label>
-            <CardTitle className="text-base">{question.question}</CardTitle>
+      <CardHeader className="px-2 lg:px-0 pb-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start gap-2">
+            <Label className="text-base lg:text-lg text-muted-foreground shrink-0">
+              #{index + 1}
+            </Label>
+            <div className="space-y-1">
+              <CardTitle className="text-sm lg:text-base leading-tight">
+                {question.question}
+              </CardTitle>
+              {question.score > 0 && (
+                <CardDescription className="text-xs">
+                  점수: {question.score}점
+                </CardDescription>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <StatusBadge status={question.answerState} />
             {question.tailQuestions?.length > 0 && (
               <button
@@ -181,29 +222,23 @@ const QuestionItem = ({
             )}
           </div>
         </div>
-        {question.score > 0 && (
-          <CardDescription>
-            점수: {question.score}점
-          </CardDescription>
-        )}
       </CardHeader>
 
-      <CardContent className="px-0 space-y-4">
+      <CardContent className="px-2 lg:px-0 space-y-4">
         {question.answer && (
           <CollapsibleText text={question.answer} label="답변" />
         )}
 
         {question.feedback && (
-          <CollapsibleText 
-            text={question.feedback} 
-            label="피드백" 
-          />
+          <CollapsibleText text={question.feedback} label="피드백" />
         )}
 
         {question.referenceLinks?.length > 0 && (
           <div className="space-y-1.5">
             <Label className="text-xs">참고 자료</Label>
-            <ReferenceLinks links={question.referenceLinks} />
+            <div className="rounded-md bg-muted p-3">
+              <ReferenceLinks links={question.referenceLinks} />
+            </div>
           </div>
         )}
 
@@ -215,11 +250,13 @@ const QuestionItem = ({
             {question.tailQuestions.map((tailQ, idx) => (
               <Card key={tailQ.tailQuestionId} className="bg-muted/30">
                 <CardHeader className="p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
-                      {idx + 1}
-                    </span>
-                    <StatusBadge status={tailQ.answerState} />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                        {idx + 1}
+                      </span>
+                      <StatusBadge status={tailQ.answerState} />
+                    </div>
                   </div>
                   <CardTitle className="text-sm mt-2">{tailQ.question}</CardTitle>
                 </CardHeader>
@@ -231,7 +268,9 @@ const QuestionItem = ({
                     <CollapsibleText text={tailQ.feedback} label="피드백" />
                   )}
                   {tailQ.referenceLinks?.length > 0 && (
-                    <ReferenceLinks links={tailQ.referenceLinks} />
+                    <div className="rounded-md bg-muted p-3">
+                      <ReferenceLinks links={tailQ.referenceLinks} />
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -311,67 +350,76 @@ export default function InterviewDetail() {
   ];
 
   return (
-    <div className="container max-w-7xl py-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <Button 
-            variant="ghost" 
-            onClick={() => window.history.back()} 
-            className="mb-2 -ml-2"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            돌아가기
-          </Button>
-          <CardTitle>{data.title}</CardTitle>
-          <CardDescription className="flex items-center gap-2">
-            면접 결과를 확인하고 개선할 점을 파악해보세요.
+    <div className="container py-4 px-2 lg:px-4 lg:py-6 space-y-4 lg:space-y-6 max-w-full lg:max-w-7xl">
+      <Card className="shadow-none lg:shadow">
+        <CardHeader className="p-3 lg:p-6 space-y-2">
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              onClick={() => window.history.back()} 
+              className="-ml-2 px-2"
+              size="sm"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <CardTitle className="text-base lg:text-xl line-clamp-1">{data.title}</CardTitle>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={
               data.interviewState === 'DONE' ? 'default' :
               data.interviewState === 'PROGRESS' ? 'destructive' : 'secondary'
-            }>
+            } className="text-xs">
               {data.interviewState === 'DONE' ? '완료' : 
                data.interviewState === 'PROGRESS' ? '실패' : '진행 중'}
             </Badge>
-          </CardDescription>
+            <CardDescription className="text-xs lg:text-sm">
+              <span className="hidden lg:inline">면접 결과를 확인하고 개선할 점을 파악해보세요.</span>
+            </CardDescription>
+          </div>
         </CardHeader>
 
-        <CardContent className="grid gap-6">
+        <CardContent className="p-3 lg:p-6 space-y-4 lg:space-y-6">
           {/* 전체 통계 */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                전체 통계
+          <Card className="shadow-sm">
+            <CardHeader className="p-3 lg:p-6 pb-2 lg:pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm lg:text-lg">전체 통계</CardTitle>
                 <Badge variant="secondary" className="text-xs">
                   {answeredQuestions}/{totalQuestions} 완료
                 </Badge>
-              </CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-3">
-              {statistics.map((stat, index) => (
-                <StatisticCard key={index} {...stat} />
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* 문제별 상세 결과 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>문제별 상세 결과</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {data.interviewQuestions?.map((question, index) => (
-                  <QuestionItem
-                    key={question.interviewQuestionId}
-                    question={question}
-                    index={index}
-                    isExpanded={expandedQuestions.includes(question.interviewQuestionId)}
-                    onToggle={() => toggleQuestion(question.interviewQuestionId)}
-                  />
+            <CardContent className="p-3 lg:p-6 pt-2 lg:pt-3">
+              {/* 데스크톱 통계 */}
+              <div className="hidden lg:grid gap-4 grid-cols-3">
+                {statistics.map((stat, index) => (
+                  <StatisticCard key={index} {...stat} />
+                ))}
+              </div>
+              {/* 모바일 통계 */}
+              <div className="lg:hidden space-y-2">
+                {statistics.map((stat, index) => (
+                  <MobileStatisticCard key={index} {...stat} />
                 ))}
               </div>
             </CardContent>
           </Card>
+
+          {/* 문제별 상세 결과 */}
+          <div className="space-y-3 lg:space-y-4">
+            <h3 className="text-sm lg:text-lg font-semibold px-1">문제별 상세 결과</h3>
+            <div className="space-y-3 lg:space-y-4">
+              {data.interviewQuestions?.map((question, index) => (
+                <QuestionItem
+                  key={question.interviewQuestionId}
+                  question={question}
+                  index={index}
+                  isExpanded={expandedQuestions.includes(question.interviewQuestionId)}
+                  onToggle={() => toggleQuestion(question.interviewQuestionId)}
+                />
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

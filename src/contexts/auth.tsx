@@ -21,12 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   const fetchUserProfile = useCallback(async () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
       const response = await axiosInstance.get<User>('/api/v1/members/me');
       setUser(response.data);
@@ -41,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: "사용자 정보를 불러오는데 실패했습니다.",
         });
       }
-      logout();
+      logout(false); // 자동 리다이렉트 방지
     } finally {
       setIsLoading(false);
     }
@@ -49,18 +43,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback((token: string) => {
     localStorage.setItem('access_token', token);
-    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`; // 토큰을 헤더에 설정
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     setIsAuthenticated(true);
     fetchUserProfile();
   }, [fetchUserProfile]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((redirect: boolean = true) => {
     localStorage.removeItem('access_token');
-    delete axiosInstance.defaults.headers.common['Authorization']; // 헤더에서 토큰 제거
+    delete axiosInstance.defaults.headers.common['Authorization'];
     setUser(null);
     setIsAuthenticated(false);
     setIsLoading(false);
-    navigate('/login');
+    if (redirect) {
+      navigate('/login');
+    }
   }, [navigate]);
 
   const updateProfile = useCallback((updatedUser: User) => {
@@ -71,7 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
-      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`; // 초기 로드 시 토큰 설정
+      // 토큰이 있으면 일단 인증된 것으로 간주
+      setIsAuthenticated(true);
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUserProfile();
     } else {
       setIsLoading(false);

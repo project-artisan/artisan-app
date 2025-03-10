@@ -25,9 +25,9 @@ export default function LoginPage() {
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
       <Card className="w-[350px]">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Welcome</CardTitle>
+          <CardTitle className="text-2xl text-center">환영합니다</CardTitle>
           <CardDescription className="text-center">
-            Sign in to Project Artisan using GitHub
+            GitHub로 로그인하여 Project Artisan을 시작하세요
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -37,7 +37,7 @@ export default function LoginPage() {
             className="w-full"
           >
             <Github className="mr-2 h-4 w-4" />
-            Continue with GitHub
+            GitHub로 계속하기
           </Button>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -47,7 +47,7 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-muted-foreground text-center">
-            By clicking continue, you agree to our Terms of Service and Privacy Policy.
+            계속 진행하면 서비스 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
           </div>
         </CardFooter>
       </Card>

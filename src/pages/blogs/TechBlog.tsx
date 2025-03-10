@@ -117,7 +117,6 @@ export default function TechBlog() {
   });
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const observer = useRef<IntersectionObserver>();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     posts,
@@ -129,6 +128,14 @@ export default function TechBlog() {
     resetPosts,
   } = useTechBlogPosts();
 
+  const scrollToTop = () => {
+    // 현재 스크롤 컨테이너를 찾아서 스크롤
+    const mainElement = document.querySelector('main.overflow-y-auto');
+    if (mainElement) {
+      mainElement.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handleSearch = (value: string) => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -136,12 +143,14 @@ export default function TechBlog() {
     searchTimeoutRef.current = setTimeout(() => {
       setSearchQuery(value);
       resetPosts();
+      scrollToTop();
     }, 300);
   };
 
   const handleSortChange = (value: SortOption) => {
     setSortOption(value);
     resetPosts();
+    scrollToTop();
   };
 
   const handleTechBlogChange = (blogs: TechBlogOption[]) => {
@@ -155,22 +164,17 @@ export default function TechBlog() {
     }
     setSearchParams(newSearchParams);
     
-    // ref를 통해 스크롤 컨테이너에 접근
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    
     resetPosts();
+    scrollToTop();
   };
 
-  // URL 쿼리 파라미터가 변경될 때 상태 업데이트
   useEffect(() => {
     const selectParam = searchParams.get('select');
     const blogsFromUrl = selectParam ? selectParam.split(',') as TechBlogOption[] : [];
     
-    // URL의 블로그 선택이 현재 상태와 다른 경우에만 업데이트
     if (JSON.stringify(blogsFromUrl) !== JSON.stringify(selectedTechBlogs)) {
       setSelectedTechBlogs(blogsFromUrl);
+      scrollToTop();
     }
   }, [searchParams]);
 
@@ -197,7 +201,7 @@ export default function TechBlog() {
   }, [fetchPosts, searchQuery, selectedTechBlogs]);
 
   return (
-    <div className="min-h-screen" ref={scrollContainerRef}>
+    <div className="min-h-full">
       <SearchControls
         onSearch={handleSearch}
         onSortChange={handleSortChange}
@@ -207,12 +211,14 @@ export default function TechBlog() {
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />
-      <BlogPostList
-        posts={posts}
-        viewMode={viewMode}
-        lastPostElementRef={lastPostElementRef}
-        loading={loading}
-      />
+      <div>
+        <BlogPostList
+          posts={posts}
+          viewMode={viewMode}
+          lastPostElementRef={lastPostElementRef}
+          loading={loading}
+        />
+      </div>
     </div>
   );
 }

@@ -46,10 +46,11 @@ export function useTechBlogPosts() {
     }
   }, [page, toast]);
 
-  const resetPosts = () => {
-    setPage(0);
+  const resetPosts = useCallback(() => {
     setPosts([]);
-  };
+    setHasMore(true);
+    setPage(0);
+  }, []);
 
   return {
     posts,

@@ -17,7 +17,6 @@ export default function DefaultLayout() {
           </main>
         </div>
 
-
         <Navbar />
         {/* 데스크톱 레이아웃 */}
         <div className='hidden lg:flex flex-1 overflow-hidden'>

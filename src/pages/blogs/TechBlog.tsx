@@ -13,9 +13,7 @@ type ViewMode = 'grid' | 'list';
 // 검색 컨트롤 컴포넌트
 interface SearchControlsProps {
   onSearch: (value: string) => void;
-  onSortChange: (value: SortOption) => void;
   onTechBlogChange: (blogs: TechBlogOption[]) => void;
-  sortOption: SortOption;
   selectedTechBlogs: TechBlogOption[];
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
@@ -23,9 +21,7 @@ interface SearchControlsProps {
 
 const SearchControls: React.FC<SearchControlsProps> = ({
   onSearch,
-  onSortChange,
   onTechBlogChange,
-  sortOption,
   selectedTechBlogs,
   viewMode,
   onViewModeChange,
@@ -35,9 +31,7 @@ const SearchControls: React.FC<SearchControlsProps> = ({
       <div className="flex items-center justify-between gap-4">
         <BlogSearch
           onSearch={onSearch}
-          onSortChange={onSortChange}
           onTechBlogChange={onTechBlogChange}
-          sortOption={sortOption}
           selectedTechBlogs={selectedTechBlogs}
         />
         <ViewModeToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
@@ -109,9 +103,7 @@ export default function TechBlog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOption, setSortOption] = useState<SortOption>('latest');
   const [selectedTechBlogs, setSelectedTechBlogs] = useState<TechBlogOption[]>(() => {
-    // URL에서 선택된 블로그들을 초기값으로 설정
     const selectParam = searchParams.get('select');
     return selectParam ? selectParam.split(',') as TechBlogOption[] : [];
   });
@@ -145,12 +137,6 @@ export default function TechBlog() {
       resetPosts();
       scrollToTop();
     }, 300);
-  };
-
-  const handleSortChange = (value: SortOption) => {
-    setSortOption(value);
-    resetPosts();
-    scrollToTop();
   };
 
   const handleTechBlogChange = (blogs: TechBlogOption[]) => {
@@ -204,9 +190,7 @@ export default function TechBlog() {
     <div className="min-h-full">
       <SearchControls
         onSearch={handleSearch}
-        onSortChange={handleSortChange}
         onTechBlogChange={handleTechBlogChange}
-        sortOption={sortOption}
         selectedTechBlogs={selectedTechBlogs}
         viewMode={viewMode}
         onViewModeChange={setViewMode}

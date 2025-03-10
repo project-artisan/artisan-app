@@ -8,16 +8,21 @@ export default function DefaultLayout() {
   return (
     <>
       <div className='flex flex-col h-screen fixed inset-0'>
+        <Navbar />
+        
         {/* 모바일 레이아웃 */}
-        <div className='lg:hidden flex flex-1 overflow-hidden'>
-          <main className='h-full w-full overflow-y-auto overscroll-none'>
-            <div className='container p-4'>
+        <div className='lg:hidden flex-1 flex flex-col overflow-hidden'>
+          <main className='flex-1 overflow-y-auto overscroll-none'>
+            <div className='container p-4 pb-20'>
               <Outlet />
             </div>
           </main>
+          {/* 모바일 하단 메뉴 */}
+          <div className='fixed bottom-0 left-0 right-0 border-t bg-background'>
+            <Sidebar />
+          </div>
         </div>
 
-        <Navbar />
         {/* 데스크톱 레이아웃 */}
         <div className='hidden lg:flex flex-1 overflow-hidden'>
           <ResizablePanelGroup direction='horizontal'>

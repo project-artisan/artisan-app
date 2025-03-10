@@ -22,8 +22,7 @@ const Settings = React.lazy(() => import('@/pages/Settings'));
 const LoginPage = React.lazy(() => import('@/pages/auth/Login'));
 const SignupPage = React.lazy(() => import('@/pages/auth/Signup'));
 const GithubCallback = React.lazy(() => import('@/pages/auth/GithubCallback'));
-const InterviewDetail = React.lazy(() => import('@/pages/interview/InterviewDetail'));
-const Introductions = React.lazy(() => import('@/pages/Introductions'));
+const InterviewDetail = React.lazy(() => import('@/pages/interview/InterviewDetail')); const Introductions = React.lazy(() => import('@/pages/Introductions'));
 
 const Root = () => {
   return (
@@ -51,7 +50,7 @@ const router = createBrowserRouter([
             path: 'introductions', 
             element: <Introductions /> 
           },
-          { index: true, element: <TechBlog /> },
+          { index: true, element: <Introductions/> },
           { path: 'blogs/tech', element: <TechBlog /> },
           { path: 'blogs/companies', element: <Companies /> },
           {

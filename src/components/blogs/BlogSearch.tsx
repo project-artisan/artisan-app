@@ -2,13 +2,6 @@ import React, { useState } from 'react';
 import { Search, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -54,17 +47,6 @@ export default function BlogSearch({
         className="max-w-sm"
       />
       
-      <Select value={sortOption} onValueChange={onSortChange}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="정렬 기준" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="latest">최신순</SelectItem>
-          <SelectItem value="oldest">오래된순</SelectItem>
-          <SelectItem value="popular">인기순</SelectItem>
-        </SelectContent>
-      </Select>
-
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button 

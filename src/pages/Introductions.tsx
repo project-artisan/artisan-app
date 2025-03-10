@@ -134,7 +134,7 @@ export default function Introductions() {
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-muted-foreground">
-                    1일 1커밋 순위 보여주는 기능 
+                    1일 1커밋 순위 보여주는 기능
                 </p>
               </CardContent>
             </Card>

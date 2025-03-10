@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { axiosInstance } from '@/lib/axios';
+import { useAuth } from '@/contexts/auth';
 
 interface QuestionSet {
   questionSetId: number;
@@ -77,7 +78,9 @@ const startInterview = async (request: StartInterviewRequest): Promise<StartInte
 };
 
 export default function AllQuestionSets() {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuestionCount, setSelectedQuestionCount] = useState(10);
   const [selectedSet, setSelectedSet] = useState<QuestionSet | null>(null);
@@ -103,6 +106,31 @@ export default function AllQuestionSets() {
         set.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         set.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
+
+  const handleStartInterview = async () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (selectedSet) {
+      try {
+        setIsStarting(true);
+        const response = await startInterview({
+          questionSetId: selectedSet.questionSetId,
+          tailQuestionDepth: selectedSet.tailQuestionDepth,
+          totalProblemCount: selectedQuestionCount,
+          timeToAnswer: 300,
+          timeToThink: 60,
+        });
+        navigate(`/interviews/${response.interviewId}`);
+      } catch (error) {
+        console.error('Failed to start interview:', error);
+      } finally {
+        setIsStarting(false);
+      }
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -235,32 +263,14 @@ export default function AllQuestionSets() {
             <Button 
               className="w-full" 
               disabled={isStarting}
-              onClick={async () => {
-                if (selectedSet) {
-                  try {
-                    setIsStarting(true);
-                    const response = await startInterview({
-                      questionSetId: selectedSet.questionSetId,
-                      tailQuestionDepth: selectedSet.tailQuestionDepth,
-                      totalProblemCount: selectedQuestionCount,
-                      timeToAnswer: 300, // 기본값 5분
-                      timeToThink: 60,   // 기본값 1분
-                    });
-                    navigate(`/interviews/${response.interviewId}`);
-                  } catch (error) {
-                    console.error('Failed to start interview:', error);
-                  } finally {
-                    setIsStarting(false);
-                  }
-                }
-              }}
+              onClick={handleStartInterview}
             >
               {isStarting ? (
                 "면접 시작 중..."
               ) : (
                 <>
                   <Play className="mr-2 h-4 w-4" />
-                  면접 시작하기
+                  {isAuthenticated ? "면접 시작하기" : "로그인하고 시작하기"}
                 </>
               )}
             </Button>

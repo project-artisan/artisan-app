@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom';
 
 import { useAuth } from '@/contexts/auth';
 import { interviewCategories } from '@/types/interview';
+import { axiosInstance } from '@/lib/axios';
 
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
@@ -99,6 +100,16 @@ export const Sidebar = () => {
     setExpandedMenus((prev) =>
       prev.includes(title) ? prev.filter((item) => item !== title) : [...prev, title]
     );
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/api/v1/auth/logout');
+      logout();
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+      logout();
+    }
   };
 
   const MenuItem = ({ item }: { item: MenuItem }) => {
@@ -179,7 +190,7 @@ export const Sidebar = () => {
             <Button
               variant='ghost'
               className='w-full justify-start text-red-500 hover:bg-red-100 hover:text-red-600'
-              onClick={logout}
+              onClick={handleLogout}
             >
               <LogOut className='h-5 w-5' />
               <span className='ml-2'>로그아웃</span>

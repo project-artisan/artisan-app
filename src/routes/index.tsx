@@ -1,13 +1,15 @@
 import React, { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+
+import { PrivateRoute } from '@/components/auth/PrivateRoute';
+import { Toaster } from '@/components/ui/toaster';
 import WaitingView from '@/components/WaitingView';
+import { AuthProvider } from '@/contexts/auth';
 import AuthLayout from '@/layouts/AuthLayout';
 import DefaultLayout from '@/layouts/DefaultLayout';
 import InterviewLayout from '@/layouts/InterviewLayout';
 import NotFoundPage from '@/pages/error/NotFound';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/auth';
 
 // Lazy loading for pages
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
@@ -21,6 +23,7 @@ const LoginPage = React.lazy(() => import('@/pages/auth/Login'));
 const SignupPage = React.lazy(() => import('@/pages/auth/Signup'));
 const GithubCallback = React.lazy(() => import('@/pages/auth/GithubCallback'));
 const InterviewDetail = React.lazy(() => import('@/pages/interview/InterviewDetail'));
+const Introductions = React.lazy(() => import('@/pages/Introductions'));
 
 const Root = () => {
   return (
@@ -44,7 +47,10 @@ const router = createBrowserRouter([
           </Suspense>
         ),
         children: [
-          // TODO 대시보드 만들기
+          { 
+            path: 'introductions', 
+            element: <Introductions /> 
+          },
           { index: true, element: <TechBlog /> },
           { path: 'blogs/tech', element: <TechBlog /> },
           { path: 'blogs/companies', element: <Companies /> },
@@ -52,11 +58,32 @@ const router = createBrowserRouter([
             path: 'interview',
             children: [
               { index: true, element: <AllQuestionSets /> },
-              { path: 'results', element: <InterviewResults /> },
-              { path: ':interviewId/detail', element: <InterviewDetail/> }
+              {
+                path: 'results',
+                element: (
+                  <PrivateRoute>
+                    <InterviewResults />
+                  </PrivateRoute>
+                )
+              },
+              {
+                path: ':interviewId/detail',
+                element: (
+                  <PrivateRoute>
+                    <InterviewDetail />
+                  </PrivateRoute>
+                )
+              }
             ]
           },
-          { path: 'settings', element: <Settings /> }
+          {
+            path: 'settings',
+            element: (
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            )
+          }
         ]
       },
       {
@@ -79,7 +106,9 @@ const router = createBrowserRouter([
         path: '/interviews/',
         element: (
           <Suspense fallback={<WaitingView />}>
-            <InterviewLayout />
+            <PrivateRoute>
+              <InterviewLayout />
+            </PrivateRoute>
           </Suspense>
         ),
         children: [{ path: ':interviewId', element: <InterviewSession /> }]
@@ -89,7 +118,6 @@ const router = createBrowserRouter([
 ]);
 
 export default function AppRoutes() {
-  return (
-    <RouterProvider router={router} />
-  );
+  return <RouterProvider router={router} />;
 }
+

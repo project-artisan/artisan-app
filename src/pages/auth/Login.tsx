@@ -2,14 +2,24 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import {Github} from "lucide-react"
 import {Separator} from "@/components/ui/separator"
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
+
   const handleGithubLogin = () => {
     const githubClientId = import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
     const redirectUri = import.meta.env.VITE_APP_GITHUB_REDIRECT_URL;
 
     window.location.href = `${import.meta.env.VITE_APP_GITHUB_AUTH_URL}?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=user:email`;
   }
+
+  const handleLoginSuccess = () => {
+    // 로그인 성공 시 원래 가려던 페이지로 이동
+    navigate(from, { replace: true });
+  };
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">

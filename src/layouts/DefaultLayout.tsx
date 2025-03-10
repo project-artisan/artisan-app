@@ -30,6 +30,7 @@ export default function DefaultLayout() {
               className='flex-none'
               style={{
                 minWidth: '200px',
+                maxWidth: '250px'
               }}
               defaultSize={1}
               maxSize={20}

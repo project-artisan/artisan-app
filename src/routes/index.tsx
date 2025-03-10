@@ -10,6 +10,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 import DefaultLayout from '@/layouts/DefaultLayout';
 import InterviewLayout from '@/layouts/InterviewLayout';
 import NotFoundPage from '@/pages/error/NotFound';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 // Lazy loading for pages
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
@@ -78,9 +79,9 @@ const router = createBrowserRouter([
           {
             path: 'settings',
             element: (
-              <PrivateRoute>
+              <AuthGuard requireAuth>
                 <Settings />
-              </PrivateRoute>
+              </AuthGuard>
             )
           }
         ]
@@ -93,7 +94,11 @@ const router = createBrowserRouter([
           </Suspense>
         ),
         children: [
-          { path: 'login', element: <LoginPage /> },
+          { path: 'login', element: (
+            <AuthGuard>
+              <LoginPage />
+            </AuthGuard>
+          ) },
           { path: 'signup', element: <SignupPage /> }
         ]
       },

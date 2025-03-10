@@ -21,17 +21,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   const fetchUserProfile = useCallback(async () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await axiosInstance.get<User>('/api/v1/members/me');
       setUser(response.data);
       setIsAuthenticated(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch user profile:', error);
-      toast({
-        variant: "destructive",
-        title: "오류 발생",
-        description: "사용자 정보를 불러오는데 실패했습니다.",
-      });
+      // 401 에러가 아닌 경우에만 토스트 메시지 표시
+      if (error.response?.status !== 401) {
+        toast({
+          variant: "destructive",
+          title: "오류 발생",
+          description: "사용자 정보를 불러오는데 실패했습니다.",
+        });
+      }
       logout();
     } finally {
       setIsLoading(false);
@@ -40,12 +49,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback((token: string) => {
     localStorage.setItem('access_token', token);
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`; // 토큰을 헤더에 설정
     setIsAuthenticated(true);
     fetchUserProfile();
   }, [fetchUserProfile]);
 
   const logout = useCallback(() => {
     localStorage.removeItem('access_token');
+    delete axiosInstance.defaults.headers.common['Authorization']; // 헤더에서 토큰 제거
     setUser(null);
     setIsAuthenticated(false);
     setIsLoading(false);
@@ -56,9 +67,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updatedUser);
   }, []);
 
+  // 초기 로드 시 토큰 확인 및 사용자 정보 가져오기
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`; // 초기 로드 시 토큰 설정
       fetchUserProfile();
     } else {
       setIsLoading(false);

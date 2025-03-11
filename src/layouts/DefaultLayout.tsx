@@ -17,10 +17,6 @@ export default function DefaultLayout() {
               <Outlet />
             </div>
           </main>
-          {/* 모바일 하단 메뉴 */}
-          <div className='fixed bottom-0 left-0 right-0 border-t bg-background'>
-            <Sidebar />
-          </div>
         </div>
 
         {/* 데스크톱 레이아웃 */}

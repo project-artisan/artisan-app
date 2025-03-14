@@ -20,7 +20,7 @@ const BlogPostCard = forwardRef<HTMLDivElement, BlogPostCardProps>(
       setImageError(true);
     };
 
-    const thumbnailUrl = imageError || !post.thumbnail ? DEFAULT_THUMBNAIL : post.thumbnail;
+    const thumbnailUrl = imageError || !post.thumbnail ? `https://d2idtq932vv5f9.cloudfront.net/techblog/${post.techBlog}` : post.thumbnail;
 
   return (
     <Card 

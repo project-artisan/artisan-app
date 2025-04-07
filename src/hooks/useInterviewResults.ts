@@ -5,10 +5,15 @@ import { axiosInstance } from '@/lib/axios';
 interface InterviewResult {
   interviewId: number;
   title: string;
-  interviewStatus: 'PROGRESS' | 'COMPLETE';
+  interviewStatus: 'PROGRESS' | 'DONE';
   questionCount: number;
   createdAt: string;
   updatedAt: string;
+  scoreGroup: {
+    success: number;
+    pass: number;
+    fail: number;
+  };
 }
 
 interface PageInfo {

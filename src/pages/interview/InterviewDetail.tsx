@@ -40,6 +40,11 @@ type InterviewResult = {
   interviewState: InterviewState;
   title: string;
   interviewQuestions: InterviewQuestion[];
+  scoreGroup: {
+    success: number;
+    pass: number;
+    fail: number;
+  };
 };
 
 type AnswerState = 'INIT' | 'COMPLETE' | 'PASS';
@@ -325,27 +330,27 @@ export default function InterviewDetail() {
   const statistics = [
     {
       icon: CheckCircle2,
-      title: "통과한 문제",
-      count: passedQuestions,
+      title: "성공한 문제",
+      count: data.scoreGroup.success,
       total: totalQuestions,
       color: "text-green-500",
       bgColor: "bg-green-100"
     },
     {
-      icon: XCircle,
-      title: "실패한 문제",
-      count: failedQuestions,
-      total: totalQuestions,
-      color: "text-red-500",
-      bgColor: "bg-red-100"
-    },
-    {
-      icon: AlertCircle,
-      title: "건너뛴 문제",
-      count: skippedQuestions,
+      icon: CheckCircle2,
+      title: "통과한 문제",
+      count: data.scoreGroup.pass,
       total: totalQuestions,
       color: "text-yellow-500",
       bgColor: "bg-yellow-100"
+    },
+    {
+      icon: XCircle,
+      title: "실패한 문제",
+      count: data.scoreGroup.fail,
+      total: totalQuestions,
+      color: "text-red-500",
+      bgColor: "bg-red-100"
     }
   ];
 

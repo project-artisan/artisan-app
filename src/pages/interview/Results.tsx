@@ -104,11 +104,31 @@ export default function InterviewResults() {
                       <div className="flex justify-between items-center text-sm">
                         <div className="flex items-center">
                           <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                          <span>성공한 문제</span>
+                        </div>
+                        <span className="font-medium">
+                          {result.scoreGroup.success}/{result.questionCount}
+                        </span>
+                      </div>
+                      <Progress 
+                        value={(result.scoreGroup.success / result.questionCount) * 100} 
+                        className="h-2" 
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center text-sm">
+                        <div className="flex items-center">
+                          <CheckCircle2 className="h-4 w-4 mr-2 text-yellow-500" />
                           <span>통과한 문제</span>
                         </div>
-                        <span className="font-medium">0/0</span>
+                        <span className="font-medium">
+                          {result.scoreGroup.pass}/{result.questionCount}
+                        </span>
                       </div>
-                      <Progress value={0} className="h-2" />
+                      <Progress 
+                        value={(result.scoreGroup.pass / result.questionCount) * 100} 
+                        className="h-2" 
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center text-sm">
@@ -116,9 +136,14 @@ export default function InterviewResults() {
                           <XCircle className="h-4 w-4 mr-2 text-red-500" />
                           <span>실패한 문제</span>
                         </div>
-                        <span className="font-medium">0/0</span>
+                        <span className="font-medium">
+                          {result.scoreGroup.fail}/{result.questionCount}
+                        </span>
                       </div>
-                      <Progress value={0} className="h-2" />
+                      <Progress 
+                        value={(result.scoreGroup.fail / result.questionCount) * 100} 
+                        className="h-2" 
+                      />
                     </div>
                   </div>
                 </CardContent>

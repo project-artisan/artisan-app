@@ -92,14 +92,14 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                 onClick={onSkip}
                 disabled={disabled}
               >
-                Skip
+                건너뛰기
               </Button>
             )}
             <Button 
               onClick={handleSubmit}
               disabled={disabled || !content.trim()}
             >
-              Submit
+              제출
             </Button>
           </div>
         </div>

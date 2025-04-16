@@ -114,9 +114,58 @@ export default function InterviewSession() {
     }
   };
 
-  const handleSkipQuestion = () => {
-    // TODO: 질문 건너뛰기 처리
-    console.log('Skip question');
+  const handleSkipQuestion = async () => {
+    if (!currentQuestion || !interviewId) return;
+
+    setIsSubmitting(true);
+    addMessage({ type: 'system', content: '질문을 건너뛰는 중입니다...' });
+
+    try {
+      let response: SubmitResponse;
+      
+      if (currentTailQuestionId) {
+        // 꼬리 질문 건너뛰기
+        const { data } = await axiosInstance.post(`/api/tail-questions/${currentTailQuestionId}/submit`, {
+          interviewQuestionId: currentQuestion.interviewQuestionId,
+          tailQuestionId: currentTailQuestionId,
+          answerState: 'PASS',
+          timeToAnswer: 0,
+          answerContent: ''
+        }, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        response = data;
+      } else {
+        // 일반 질문 건너뛰기
+        const { data } = await axiosInstance.post(`/api/interviews/${interviewId}/submit`, {
+          interviewQuestionId: currentQuestion.interviewQuestionId,
+          answerState: 'PASS',
+          timeToAnswer: 0,
+          answerContent: ''
+        }, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        response = data;
+      }
+
+      // 시스템 메시지 제거
+      setChatMessages(prev => prev.filter(msg => msg.type !== 'system'));
+
+     
+        setCurrentTailQuestionId(null);
+        await refetchQuestion();
+        clearChat();
+    } catch (error) {
+      console.error('Failed to skip question:', error);
+      addMessage({ type: 'system', content: '질문 건너뛰기에 실패했습니다.' });
+    } finally {
+      setIsSubmitting(false);
+      chatInputRef.current?.focus();
+    }
   };
 
   if (isLoadingInterview || isLoadingQuestion) {

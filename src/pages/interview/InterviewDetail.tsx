@@ -67,13 +67,13 @@ const StatusBadge = ({ status }: { status: AnswerState }) => {
     'COMPLETE': {
       variant: "default",
       icon: CheckCircle2,
-      text: "통과",
+      text: "완료",
       className: "bg-green-500 text-xs lg:text-sm"
     },
     'PASS': {
-      variant: "destructive",
+      variant: "outline",
       icon: XCircle,
-      text: "실패",
+      text: "넘김",
       className: "text-xs lg:text-sm"
     }
   };
@@ -204,7 +204,7 @@ const QuestionItem = ({
               <CardTitle className="text-sm lg:text-base leading-tight">
                 {question.question}
               </CardTitle>
-              {question.score > 0 && (
+              {question.score >= 0 && (
                 <CardDescription className="text-xs">
                   점수: {question.score}점
                 </CardDescription>
@@ -338,7 +338,7 @@ export default function InterviewDetail() {
     },
     {
       icon: CheckCircle2,
-      title: "통과한 문제",
+      title: "건너뛴 문제",
       count: data.scoreGroup.pass,
       total: totalQuestions,
       color: "text-yellow-500",
